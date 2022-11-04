@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Text, View, StyleSheet, Pressable, ScrollView } from 'react-native';
 import IconeMt from 'react-native-vector-icons/MaterialCommunityIcons'
 
-const HomeScreen = () => {
+const HomeScreen = ({navigation}) => {
 
-    const [ isMotorista, setMotorista ] = useState(false);
+    const [ isMotorista, setMotorista ] = useState(true);
     
     return (
     <View style={styles.container}>
@@ -22,7 +22,8 @@ const HomeScreen = () => {
 
                 <View style={styles.container__content__mt__view_btn}>
                     <Pressable 
-                        style={styles.container__content__mt__btn}>
+                        style={styles.container__content__mt__btn}
+                        onPress={() => navigation.navigate('CadastroVeic')}>
                         <Text style={styles.container__content__mt__btn_text}>+ ADICIONAR VEÍCULO</Text>
                     </Pressable>
                 </View>

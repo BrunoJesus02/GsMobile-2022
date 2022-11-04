@@ -1,7 +1,25 @@
 import React from 'react';
 import { Text, View, StyleSheet, Pressable, Image, TextInput } from 'react-native';
+import {useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
     const LoginScreen = ({navigation}) => {
+
+    const schema = yup.object({
+        email: yup.string().email("Email inválido").required("Informe seu email"),
+        senha: yup.string().required("Informe a senha")
+    })    
+
+    const { control, handleSubmit, formState: { errors } } = useForm({
+        resolver: yupResolver(schema)
+    })
+
+   
+    const login = (data) => {
+        console.log(data)
+        navigation.replace('Home')
+    };
 
     return (
     <View style={styles.container}>
@@ -11,17 +29,34 @@ import { Text, View, StyleSheet, Pressable, Image, TextInput } from 'react-nativ
             <Text style={styles.container__login__text}>LOGIN</Text>
         </View>
 
-        <TextInput style={styles.container__login__input}
-          placeholder = 'E-MAIL'
-          placeholderTextColor={'#000'}/>
+        <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value}}) => (
+                <TextInput style={styles.container__login__input}
+                placeholder = 'E-MAIL'
+                placeholderTextColor={'#000'}
+                onChangeText={onChange}
+                value={value}/>
+            )}/>
+        {errors.email && <Text style={styles.container__login__input_erros}>{errors.email?.message}</Text>}
 
-        <TextInput style={styles.container__login__input}
-          placeholder = 'SENHA'
-          placeholderTextColor={'#000'}/>
+        <Controller
+            control={control}
+            name="senha"
+            render={({ field: { onChange, value}}) => (
+                <TextInput style={styles.container__login__input}
+                placeholder = 'SENHA'
+                placeholderTextColor={'#000'}
+                onChangeText={onChange}
+                value={value}
+                secureTextEntry={true}/>
+          )}/>
+        {errors.senha && <Text style={styles.container__login__input_erros}>{errors.senha?.message}</Text>}
 
         <Pressable 
           style={styles.container__login__btn}
-          onPress={() => navigation.replace('Home')}>
+          onPress={handleSubmit(login)}>
           <Text>ENTRAR</Text>
         </Pressable>
 
@@ -54,7 +89,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#005C53',
         display: 'flex',
         alignItems: 'center',
-        paddingTop: 80
+        paddingTop: 50
     },
     logo: {
         height: 200,
@@ -62,7 +97,7 @@ const styles = StyleSheet.create({
     },
     container__login: {
         width: '100%',
-        marginTop: 60,   
+        marginTop: 30,   
     },
     container__login__text: {
         marginLeft: 20,
@@ -78,7 +113,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#FFF',
         paddingLeft: 20,
-        marginTop: 25
+        marginTop: 40
     },
     container__login__btn: {
         backgroundColor: '#FFF',
@@ -113,5 +148,11 @@ const styles = StyleSheet.create({
     container__login__content__btnCadastro_text: {
         fontSize: 12,
         fontWeight: '200'
+    },
+    container__login__input_erros: {
+      color: '#D6D58E',  
+      fontWeight: 'bold',
+      width: '75%',
+      marginTop: 5
     }
 })

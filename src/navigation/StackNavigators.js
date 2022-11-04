@@ -4,6 +4,7 @@ import BottomTabsNavigator from './BottomTabsNavigator';
 import LoginScreen from '../screens/LoginScreen';
 import CadastroMotoristaScreen from '../screens/CadastroMotoristaScreen';
 import CadastroUsuarioScreen from '../screens/CadastroUsuarioScreen';
+import CadastroVeiculoScreen from '../screens/CadastroVeiculoScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -21,6 +22,7 @@ export const MainStackNavigator = () => {
         <Stack.Screen name='Login' component={LoginScreen} />
         <Stack.Screen name='CadastroMt' component={CadastroMotoristaScreen} />
         <Stack.Screen name='CadastroPs' component={CadastroUsuarioScreen} />
+        <Stack.Screen name='CadastroVeic' component={CadastroVeiculoScreen} />
         <Stack.Screen name='Home' component={BottomTabsNavigator} />
         </Stack.Navigator>
     );

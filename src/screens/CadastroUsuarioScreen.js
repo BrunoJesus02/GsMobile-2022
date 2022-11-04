@@ -1,7 +1,42 @@
 import React from 'react';
 import { Text, View, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native';
+import {useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
     const CadastroUsuarioScreen = ({navigation}) => {
+
+    const schema = yup.object({
+        nome: yup.string()
+            .required("O nome é obrigatório"),
+        email: yup.string()
+            .email("Email inválido")
+            .required("Informe seu email"),
+        senha: yup.string()
+            .required("Informe a senha")
+            .min(6, "A senha deve conter pelo menos 6 digitos"),
+        cpf: yup.number()
+            .required("CPF é obrigatório")
+            .integer("CPF inválido")
+            .min(11, "O número mínimo para o CPF está incorreto")
+            .max(11, "O número máximo para o CPF está incorreto")
+            .positive("CPF inválido"),
+        rg: yup.number()
+            .required("RG é obrigatório")
+            .integer("RG inválido")
+            .min(8, "O número mínimo para o RG está incorreto")
+            .max(11, "O número máximo para o RG está incorreto")
+            .positive("RG inválido")
+    })    
+
+    const { control, handleSubmit, formState: { errors } } = useForm({
+        resolver: yupResolver(schema)
+    })
+
+    
+    const cadastrar = (data) => {
+        console.log(data)
+    };
 
     return (
         <View style={styles.container}>
@@ -13,32 +48,72 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput } from 'react-
             <View style={styles.container__content}>
                 <ScrollView style={styles.container__scroll_view}>
                 
-                <TextInput style={styles.container__cadastro_mt__input}
-                placeholder = 'NOME COMPLETO'
-                placeholderTextColor={'#000'}/>
+                    <Controller
+                        control={control}
+                        name="nome"
+                        render={({ field: { onChange, value}}) => (
+                            <TextInput style={styles.container__cadastro_mt__input}
+                                placeholder = 'NOME COMPLETO'
+                                placeholderTextColor={'#000'}
+                                onChangeText={onChange}
+                                value={value}/>
+                    )}/>
+                    {errors.nome && <Text style={styles.container__cadastro_ps__input_erro}>{errors.nome?.message}</Text>}
 
-                <TextInput style={styles.container__cadastro_mt__input}
-                    placeholder = 'E-MAIL'
-                    placeholderTextColor={'#000'}/>
+                    <Controller
+                        control={control}
+                        name="email"
+                        render={({ field: { onChange, value}}) => (
+                            <TextInput style={styles.container__cadastro_mt__input}
+                                placeholder = 'E-MAIL'
+                                placeholderTextColor={'#000'}
+                                onChangeText={onChange}
+                                value={value}/>
+                    )}/>
+                    {errors.email && <Text style={styles.container__cadastro_ps__input_erro}>{errors.email?.message}</Text>}
 
-                <TextInput style={styles.container__cadastro_mt__input}
-                    placeholder = 'SENHA'
-                    placeholderTextColor={'#000'}/>    
+                    <Controller
+                        control={control}
+                        name="senha"
+                        render={({ field: { onChange, value}}) => (
+                            <TextInput style={styles.container__cadastro_mt__input}
+                                placeholder = 'SENHA'
+                                placeholderTextColor={'#000'}
+                                onChangeText={onChange}
+                                value={value}/>
+                    )}/>
+                    {errors.senha && <Text style={styles.container__cadastro_ps__input_erro}>{errors.senha?.message}</Text>}
 
-                <TextInput style={styles.container__cadastro_mt__input}
-                    placeholder = 'CPF'
-                    placeholderTextColor={'#000'}/> 
-
-                <TextInput style={styles.container__cadastro_mt__input}
-                    placeholder = 'RG'
-                    placeholderTextColor={'#000'}/> 
+                    <Controller
+                        control={control}
+                        name="cpf"
+                        render={({ field: { onChange, value}}) => (
+                            <TextInput style={styles.container__cadastro_mt__input}
+                                placeholder = 'CPF'
+                                placeholderTextColor={'#000'}
+                                onChangeText={onChange}
+                                value={value}/> 
+                    )}/>
+                    {errors.cpf && <Text style={styles.container__cadastro_ps__input_erro}>{errors.cpf?.message}</Text>}
                     
+                    <Controller
+                        control={control}
+                        name="rg"
+                        render={({ field: { onChange, value}}) => (
+                            <TextInput style={styles.container__cadastro_mt__input}
+                                placeholder = 'RG'
+                                placeholderTextColor={'#000'}
+                                onChangeText={onChange}
+                                value={value}/> 
+                    )}/>
+                    {errors.rg && <Text style={styles.container__cadastro_ps__input_erro}>{errors.rg?.message}</Text>}
+    
                 </ScrollView>
             </View>
 
             <Pressable 
                 style={styles.container__cadastro_mt__btn}
-                onPress={() => navigation.replace('Home')}>
+                onPress={handleSubmit(cadastrar)}>
                 <Text>CADASTRAR</Text>
             </Pressable>
            
@@ -76,6 +151,12 @@ const styles = StyleSheet.create({
         borderColor: '#FFF',
         paddingLeft: 20,
         marginTop: 25
+    },
+    container__cadastro_ps__input_erro: {
+        color: '#D6D58E',  
+        fontWeight: 'bold',
+        width: '75%',
+        marginTop: 5
     },
     container__cadastro_mt__btn: {
         backgroundColor: '#FFF',
