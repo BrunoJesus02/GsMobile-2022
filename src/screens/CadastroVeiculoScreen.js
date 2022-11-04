@@ -1,7 +1,35 @@
 import React from 'react';
 import { Text, View, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native';
+import {useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 
     const CadastroVeiculoScreen = ({navigation}) => {
+
+    const schema = yup.object({
+        marca: yup.string()
+            .required("Informe seu email"),
+        modelo: yup.string().required("Informe a senha"),
+        ano: yup.number("Não é permitido letras")
+            .required("O ano do veículo é obrigatorio")
+            .integer("Não é permitido números negativos")
+            .max(4, "Ano precisa ter apenas 4 digitos")
+            .min(4, "Ano precisa ter 4 digitos"),
+        cor: yup.string("Inválido")
+                .required("A cor do veículo é obrigatória"),
+        placa: yup.string().required("A placa do veículo é obrigatória"),
+        chassi: yup.string().required("O chassi do veículo é obrigatório")
+    })    
+
+    const { control, handleSubmit, formState: { errors } } = useForm({
+        resolver: yupResolver(schema)
+    })
+
+    
+    const cadastrar = (data) => {
+        console.log(data)
+        navigation.replace('Home')
+    };
 
     return (
         <View style={styles.container}>
@@ -13,36 +41,75 @@ import { Text, View, StyleSheet, Pressable, ScrollView, TextInput } from 'react-
             <View style={styles.container__content}>
                 <ScrollView style={styles.container__scroll_view}>
                 
-                <TextInput style={styles.container__cadastro_mt__input}
-                placeholder = 'MARCA'
-                placeholderTextColor={'#000'}/>
-
-                <TextInput style={styles.container__cadastro_mt__input}
-                    placeholder = 'MODELO'
+                <Controller
+                control={control}
+                name="marca"
+                render={({ field: { onChange, value}}) => (
+                    <TextInput style={styles.container__cadastro_mt__input}
+                    placeholder = 'MARCA'
                     placeholderTextColor={'#000'}/>
+                )}/>
+                {errors.marca && <Text style={styles.container__login__input_erros}>{errors.marca?.message}</Text>}
 
-                <TextInput style={styles.container__cadastro_mt__input}
-                    placeholder = 'ANO'
-                    placeholderTextColor={'#000'}/>    
 
-                <TextInput style={styles.container__cadastro_mt__input}
-                    placeholder = 'COR'
-                    placeholderTextColor={'#000'}/> 
+                <Controller
+                control={control}
+                name="modelo"
+                render={({ field: { onChange, value}}) => (
+                    <TextInput style={styles.container__cadastro_mt__input}
+                        placeholder = 'MODELO'
+                        placeholderTextColor={'#000'}/>
+                )}/>
+                {errors.modelo && <Text style={styles.container__login__input_erros}>{errors.modelo?.message}</Text>}
+                
 
-                <TextInput style={styles.container__cadastro_mt__input}
-                    placeholder = 'PLACA'
-                    placeholderTextColor={'#000'}/> 
+                <Controller
+                control={control}
+                name="ano"
+                render={({ field: { onChange, value}}) => (
+                    <TextInput style={styles.container__cadastro_mt__input}
+                        placeholder = 'ANO'
+                        placeholderTextColor={'#000'}/>
+                )}/>
+                {errors.ano && <Text style={styles.container__login__input_erros}>{errors.ano?.message}</Text>}   
 
-                <TextInput style={styles.container__cadastro_mt__input}
-                    placeholder = 'CHASSI DO VEÍCULO'
-                    placeholderTextColor={'#000'}/>
+                <Controller
+                control={control}
+                name="cor"
+                render={({ field: { onChange, value}}) => (
+                    <TextInput style={styles.container__cadastro_mt__input}
+                        placeholder = 'COR'
+                        placeholderTextColor={'#000'}/>
+                )}/>
+                {errors.cor && <Text style={styles.container__login__input_erros}>{errors.cor?.message}</Text>}  
                     
+
+                <Controller
+                control={control}
+                name="placa"
+                render={({ field: { onChange, value}}) => (
+                    <TextInput style={styles.container__cadastro_mt__input}
+                        placeholder = 'PLACA'
+                        placeholderTextColor={'#000'}/> 
+                )}/>
+                {errors.placa && <Text style={styles.container__login__input_erros}>{errors.placa?.message}</Text>}
+                
+                <Controller
+                control={control}
+                name="chassi"
+                render={({ field: { onChange, value}}) => (
+                    <TextInput style={styles.container__cadastro_mt__input}
+                        placeholder = 'CHASSI DO VEÍCULO'
+                        placeholderTextColor={'#000'}/>
+                )}/>
+                {errors.chassi && <Text style={styles.container__login__input_erros}>{errors.chassi?.message}</Text>}
+
                 </ScrollView>
             </View>
 
             <Pressable 
                 style={styles.container__cadastro_mt__btn}
-                onPress={() => navigation.replace('Home')}>
+                onPress={handleSubmit(cadastrar)}>
                 <Text>CADASTRAR</Text>
             </Pressable>
            
@@ -98,6 +165,11 @@ const styles = StyleSheet.create({
     container__scroll_view: {
         width: '75%',
         height: '20%',
-        
+    },
+    container__login__input_erros: {
+        color: '#D6D58E',  
+        fontWeight: 'bold',
+        width: '75%',
+        marginTop: 5
     }
 })

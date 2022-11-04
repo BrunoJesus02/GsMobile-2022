@@ -1,10 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Text, View, StyleSheet, Pressable, ScrollView } from 'react-native';
-import IconeMt from 'react-native-vector-icons/MaterialCommunityIcons'
+import IconeMt from 'react-native-vector-icons/MaterialCommunityIcons';
+import { Modalize } from 'react-native-modalize';
 
 const HomeScreen = ({navigation}) => {
 
     const [ isMotorista, setMotorista ] = useState(true);
+    const modalizeRef = useRef(null)
+
+    const onOpen= () =>  {
+        modalizeRef.current?.open();
+    }
+
+    const deletarVeiculo = () => {
+        console.log('deletar');
+        modalizeRef.current?.close();
+    }
     
     return (
     <View style={styles.container}>
@@ -39,7 +50,8 @@ const HomeScreen = ({navigation}) => {
                         </Pressable>
 
                         <Pressable
-                        style={styles.container__content__scroll_view__card_btn}>
+                        style={styles.container__content__scroll_view__card_btn}
+                        onPress={onOpen}>
                             <IconeMt name="delete" size={20}/>
                         </Pressable>
 
@@ -47,6 +59,18 @@ const HomeScreen = ({navigation}) => {
 
                 </ScrollView>
 
+                <Modalize
+                ref={modalizeRef}
+                snapPoint={180}>
+                    <View style={styles.container__content__modal_delete}>
+                        <Text style={styles.container__content__modal_delete_text}>TEM CERTEZA QUE DESEJA EXCLUIR ESSE VEÍCULO?</Text>
+                        <Pressable
+                        style={styles.container__content__modal_delete__btn}
+                        onPress={deletarVeiculo}>
+                            <Text>CONFIRMAR</Text>
+                        </Pressable>
+                    </View>    
+                </Modalize>
             </View>
 
             :
@@ -207,5 +231,27 @@ const styles = StyleSheet.create({
         borderColor: '#D9D9D9',
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    container__content__modal_delete: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
+        width: '100%',
+        marginTop: 30
+    },
+    container__content__modal_delete_text: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        textAlign: 'center'
+    },
+    container__content__modal_delete__btn: {
+        backgroundColor: '#D6D58E',
+        width: '35%',
+        height: 50,
+        borderRadius: 5,
+        borderColor: '#D9D9D9',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 30
     }
 })
