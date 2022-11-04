@@ -4,7 +4,7 @@ import {useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
-    const CadastroVeiculoScreen = ({navigation}) => {
+    const AtualizarVeiculoScreen = ({navigation, route}) => {
 
     const schema = yup.object({
         marca: yup.string()
@@ -22,11 +22,19 @@ import * as yup from 'yup';
     })    
 
     const { control, handleSubmit, formState: { errors } } = useForm({
+        defaultValues: {
+            marca: route.params.info.marca,
+            modelo: route.params.info.modelo,
+            ano: route.params.info.ano,
+            cor: route.params.info.cor,
+            placa: route.params.info.placa,
+            chassi: route.params.info.chassi
+        },
         resolver: yupResolver(schema)
     })
 
     
-    const cadastrar = (data) => {
+    const atualizar = (data) => {
         console.log(data)
         navigation.replace('Home')
     };
@@ -47,9 +55,7 @@ import * as yup from 'yup';
                 render={({ field: { onChange, value}}) => (
                     <TextInput style={styles.container__cadastro_mt__input}
                     placeholder = 'MARCA'
-                    placeholderTextColor={'#000'}
-                    onChangeText={onChange}
-                    value={value}/>
+                    placeholderTextColor={'#000'}/>
                 )}/>
                 {errors.marca && <Text style={styles.container__login__input_erros}>{errors.marca?.message}</Text>}
 
@@ -60,9 +66,7 @@ import * as yup from 'yup';
                 render={({ field: { onChange, value}}) => (
                     <TextInput style={styles.container__cadastro_mt__input}
                         placeholder = 'MODELO'
-                        placeholderTextColor={'#000'}
-                        onChangeText={onChange}
-                        value={value}/>
+                        placeholderTextColor={'#000'}/>
                 )}/>
                 {errors.modelo && <Text style={styles.container__login__input_erros}>{errors.modelo?.message}</Text>}
                 
@@ -73,9 +77,7 @@ import * as yup from 'yup';
                 render={({ field: { onChange, value}}) => (
                     <TextInput style={styles.container__cadastro_mt__input}
                         placeholder = 'ANO'
-                        placeholderTextColor={'#000'}
-                        onChangeText={onChange}
-                        value={value}/>
+                        placeholderTextColor={'#000'}/>
                 )}/>
                 {errors.ano && <Text style={styles.container__login__input_erros}>{errors.ano?.message}</Text>}   
 
@@ -85,9 +87,7 @@ import * as yup from 'yup';
                 render={({ field: { onChange, value}}) => (
                     <TextInput style={styles.container__cadastro_mt__input}
                         placeholder = 'COR'
-                        placeholderTextColor={'#000'}
-                        onChangeText={onChange}
-                        value={value}/>
+                        placeholderTextColor={'#000'}/>
                 )}/>
                 {errors.cor && <Text style={styles.container__login__input_erros}>{errors.cor?.message}</Text>}  
                     
@@ -98,9 +98,7 @@ import * as yup from 'yup';
                 render={({ field: { onChange, value}}) => (
                     <TextInput style={styles.container__cadastro_mt__input}
                         placeholder = 'PLACA'
-                        placeholderTextColor={'#000'}
-                        onChangeText={onChange}
-                        value={value}/> 
+                        placeholderTextColor={'#000'}/> 
                 )}/>
                 {errors.placa && <Text style={styles.container__login__input_erros}>{errors.placa?.message}</Text>}
                 
@@ -110,9 +108,7 @@ import * as yup from 'yup';
                 render={({ field: { onChange, value}}) => (
                     <TextInput style={styles.container__cadastro_mt__input}
                         placeholder = 'CHASSI DO VEÍCULO'
-                        placeholderTextColor={'#000'}
-                        onChangeText={onChange}
-                        value={value}/>
+                        placeholderTextColor={'#000'}/>
                 )}/>
                 {errors.chassi && <Text style={styles.container__login__input_erros}>{errors.chassi?.message}</Text>}
 
@@ -121,7 +117,7 @@ import * as yup from 'yup';
 
             <Pressable 
                 style={styles.container__cadastro_mt__btn}
-                onPress={handleSubmit(cadastrar)}>
+                onPress={handleSubmit(atualizar)}>
                 <Text>CADASTRAR</Text>
             </Pressable>
            
@@ -129,7 +125,7 @@ import * as yup from 'yup';
     )    
 }
 
-export default CadastroVeiculoScreen;
+export default AtualizarVeiculoScreen;
 
 const styles = StyleSheet.create({
     container: {
