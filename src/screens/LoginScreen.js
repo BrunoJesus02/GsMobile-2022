@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View, StyleSheet, Pressable, Image, TextInput } from 'react-native';
 
-const LoginScreen = () => {
+    const LoginScreen = ({navigation}) => {
 
     return (
     <View style={styles.container}>
@@ -21,7 +21,7 @@ const LoginScreen = () => {
 
         <Pressable 
           style={styles.container__login__btn}
-          onPress={() => console.log('foi')}>
+          onPress={() => navigation.replace('Home')}>
           <Text>ENTRAR</Text>
         </Pressable>
 
@@ -29,12 +29,14 @@ const LoginScreen = () => {
 
         <View style={styles.container__login__content__btnCadastro}>
             <Pressable 
-            style={styles.container__login__content__btnCadastro_button}>
+            style={styles.container__login__content__btnCadastro_button}
+            onPress={() => navigation.replace('CadastroMt')}>
             <Text style={styles.container__login__content__btnCadastro_text}>SOU MOTORISTA</Text>
             </Pressable>
 
             <Pressable 
-            style={styles.container__login__content__btnCadastro_button}>
+            style={styles.container__login__content__btnCadastro_button}
+            onPress={() => navigation.replace('CadastroPs')}>
             <Text style={styles.container__login__content__btnCadastro_text}>SOU PASSAGEIRO</Text>
             </Pressable>
         </View>

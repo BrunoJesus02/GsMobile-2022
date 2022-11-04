@@ -2,6 +2,8 @@ import React from 'react';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import BottomTabsNavigator from './BottomTabsNavigator';
 import LoginScreen from '../screens/LoginScreen';
+import CadastroMotoristaScreen from '../screens/CadastroMotoristaScreen';
+import CadastroUsuarioScreen from '../screens/CadastroUsuarioScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -17,6 +19,8 @@ export const MainStackNavigator = () => {
             }}
         >
         <Stack.Screen name='Login' component={LoginScreen} />
+        <Stack.Screen name='CadastroMt' component={CadastroMotoristaScreen} />
+        <Stack.Screen name='CadastroPs' component={CadastroUsuarioScreen} />
         <Stack.Screen name='Home' component={BottomTabsNavigator} />
         </Stack.Navigator>
     );
