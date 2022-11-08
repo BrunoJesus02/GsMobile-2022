@@ -1,11 +1,36 @@
-import React, { useState, useRef } from 'react';
-import { Text, View, StyleSheet, Pressable, ScrollView } from 'react-native';
+import React, { useState, useRef, useEffect } from 'react';
+import { Text, View, StyleSheet, Pressable, ScrollView, FlatList } from 'react-native';
 import IconeMt from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Modalize } from 'react-native-modalize';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HomeScreen = ({navigation}) => {
 
-    const [ isMotorista, setMotorista ] = useState(true);
+    const onInit = async () => {
+        
+        try {
+            const token = await AsyncStorage.getItem('token')
+            if(token != null) {
+                try {
+                    const tokenJson = await JSON.parse(token)
+                    console.log('tokeJson ', tokenJson)
+                    setIsMotorista(tokenJson.isMotorista)
+                    setMotorista(tokenJson)  
+                } catch (err) {
+                    console.log(err)
+                }
+            } 
+        } catch (e) {
+          console.log('erro na requisição' + e)
+        }
+        
+        if (isMotorista === true) {
+            carregarVeiculos(motorista.id)
+        }
+      };
+
+    const [ isMotorista, setIsMotorista ] = useState(false);
+    const [ motorista, setMotorista ] = useState({});
     const modalizeRef = useRef(null)
 
     const onOpen= () =>  {
@@ -16,6 +41,24 @@ const HomeScreen = ({navigation}) => {
         console.log('deletar');
         modalizeRef.current?.close();
     }
+
+
+    const carregarVeiculos = async (id) => {
+        console.log(`https://fiap-dbe-globalsolution.herokuapp.com/api/veiculo/motorista/${id}`);
+        try {
+            const response = await fetch(`https://fiap-dbe-globalsolution.herokuapp.com/api/veiculo/motorista/${id}`)
+            if (response.status === 404) {
+                console.log('nao encontrado')
+            } else if(response.status === 200) {
+                const json = await response.json();
+                console.log('veiculos ', json); 
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    useEffect(() => { onInit(); }, []);
     
     return (
     <View style={styles.container}>
@@ -38,8 +81,8 @@ const HomeScreen = ({navigation}) => {
                         <Text style={styles.container__content__mt__btn_text}>+ ADICIONAR VEÍCULO</Text>
                     </Pressable>
                 </View>
-          
-                <ScrollView style={styles.container__content__scroll_view}>
+
+                    <ScrollView style={styles.container__content__scroll_view}>
 
                     <View style={styles.container__content__scroll_view__card}>
                         <Text style={styles.container__content__scroll_view__card_text}>Teste Da Honda</Text>
@@ -57,7 +100,7 @@ const HomeScreen = ({navigation}) => {
 
                     </View>
 
-                </ScrollView>
+                    </ScrollView>
 
                 <Modalize
                 ref={modalizeRef}

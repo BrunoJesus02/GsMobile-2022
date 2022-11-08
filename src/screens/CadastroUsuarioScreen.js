@@ -13,20 +13,15 @@ import * as yup from 'yup';
             .email("Email inválido")
             .required("Informe seu email"),
         senha: yup.string()
-            .required("Informe a senha")
-            .min(6, "A senha deve conter pelo menos 6 digitos"),
-        cpf: yup.number()
+            .required("Informe a senha"),
+        cpf: yup.string()
             .required("CPF é obrigatório")
-            .integer("CPF inválido")
-            .min(11, "O número mínimo para o CPF está incorreto")
-            .max(11, "O número máximo para o CPF está incorreto")
-            .positive("CPF inválido"),
-        rg: yup.number()
+            .min(8, "O número mínimo para o CPF está incorreto")
+            .max(11, "O número máximo para o CPF está incorreto"),
+        rg: yup.string()
             .required("RG é obrigatório")
-            .integer("RG inválido")
-            .min(8, "O número mínimo para o RG está incorreto")
+            .min(9, "O número mínimo para o RG está incorreto")
             .max(11, "O número máximo para o RG está incorreto")
-            .positive("RG inválido")
     })    
 
     const { control, handleSubmit, formState: { errors } } = useForm({
@@ -34,8 +29,41 @@ import * as yup from 'yup';
     })
 
     
-    const cadastrar = (data) => {
-        console.log(data)
+    const cadastrar = async (data) => {
+        console.log(JSON.stringify({ 
+            "nome": data.nome,
+            "cpf": data.cpf,
+            "rg": data.rg,
+            "email": data.email,
+            "password": data.senha,
+        }))
+        try {
+            const response = await fetch('https://fiap-dbe-globalsolution.herokuapp.com/api/passageiro', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    "nome": data.nome,
+                    "cpf": data.cpf,
+                    "rg": data.rg,
+                    "email": data.email,
+                    "password": data.senha,
+                })
+            });
+            const json = await response.text();
+            console.log('status ', response.status);
+
+            if (response.status === 201) {
+                console.log("Cadastrou!")
+                navigation.replace('Login')
+            } else {
+                console.log("mensagem de erro")
+            }
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     return (

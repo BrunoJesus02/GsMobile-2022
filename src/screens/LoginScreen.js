@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, Pressable, Image, TextInput } from 'react-nativ
 import {useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
     const LoginScreen = ({navigation}) => {
 
@@ -16,9 +17,35 @@ import * as yup from 'yup';
     })
 
    
-    const login = (data) => {
-        console.log(data)
-        navigation.replace('Home')
+    const login = async (data) => {
+        console.log('enviado', JSON.stringify({ 
+            "email": data.email,
+            "password": data.senha
+        }))
+        try {
+            const response = await fetch('https://fiap-dbe-globalsolution.herokuapp.com/api/auth', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    "email": data.email,
+                    "password": data.senha
+                })
+            });
+            const json = await response.text();
+            console.log('status ', response.status);
+
+            if (response.status === 200) {
+                await AsyncStorage.setItem('token', json)
+                navigation.replace('Home')
+            } else if (response.status === 403) {
+                console.log("mensagem de erro")
+            }
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     return (

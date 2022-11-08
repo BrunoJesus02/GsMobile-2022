@@ -13,8 +13,8 @@ import * as yup from 'yup';
         ano: yup.number("Não é permitido letras")
             .required("O ano do veículo é obrigatorio")
             .integer("Não é permitido números negativos")
-            .max(4, "Ano precisa ter apenas 4 digitos")
-            .min(4, "Ano precisa ter 4 digitos"),
+            .max(9999, "Ano precisa ter apenas 4 digitos")
+            .min(9999, "Ano precisa ter 4 digitos"),
         cor: yup.string("Inválido")
                 .required("A cor do veículo é obrigatória"),
         placa: yup.string().required("A placa do veículo é obrigatória"),

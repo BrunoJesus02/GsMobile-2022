@@ -15,28 +15,24 @@ import * as yup from 'yup';
         senha: yup.string()
             .required("Informe a senha")
             .min(6, "A senha deve conter pelo menos 6 digitos"),
-        cpf: yup.number()
+        cpf: yup.string()
             .required("CPF é obrigatório")
-            .integer("CPF inválido")
-            .min(11, "O número mínimo para o CPF está incorreto")
-            .max(11, "O número máximo para o CPF está incorreto")
-            .positive("CPF inválido"),
-        cnh: yup.number()
+            .min(2, "O número mínimo para o CPF está incorreto")
+            .max(99999999999, "O número máximo para o CPF está incorreto"),
+        cnh: yup.string()
             .required("CNH é obrigatório")
-            .integer("CNH inválido")
-            .min(11, "O número mínimo para a CNH está incorreto")
-            .max(11, "O número máximo para o CNH está incorreto")
-            .positive("CNH inválido"),
+            .min(2, "O número mínimo para a CNH está incorreto")
+            .max(99999999999, "O número máximo para o CNH está incorreto"),
         ddd: yup.number()
             .required("O DDD é obrigatório")
             .integer("DDD inválido")
-            .max(3, "O número do DDD está incorreto")
+            .max(999, "O número do DDD está incorreto")
             .positive("DDD inválido"),
         telefone: yup.number()
             .required("O telefone é obrigatório")
             .integer("Numero de telefone inválido")
-            .min(7, "Numero de telefone inválido")
-            .max(10, "Numero de telefone inválido")
+            .min(9999999, "Numero de telefone inválido")
+            .max(9999999999, "Numero de telefone inválido")
             .positive("Numero de telefone inválido"),
         regiao: yup.string()
             .required("A região de trabalho é obrigatória")
@@ -47,8 +43,36 @@ import * as yup from 'yup';
     })
 
     
-    const cadastrar = (data) => {
-        console.log(data)
+    const cadastrar = async (data) => {
+        try {
+            const response = await fetch('https://fiap-dbe-globalsolution.herokuapp.com/api/motorista', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ 
+                    "nome": data.nome,
+                    "cpf": data.cpf,
+                    "cnh": data.cnh,
+                    "cadastroAtivo": true,
+                    "dataCadastro": "2022-07-22",
+                    "email": data.email,
+                    "password": data.senha,
+                })
+            });
+            const json = await response.text();
+            console.log('status ', response.status);
+
+            if (response.status === 201) {
+                console.log("Cadastrou!")
+                navigation.replace('Login')
+            } else {
+                console.log("mensagem de erro")
+            }
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     return (
