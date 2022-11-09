@@ -16,12 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
         resolver: yupResolver(schema)
     })
 
-   
     const login = async (data) => {
-        console.log('enviado', JSON.stringify({ 
-            "email": data.email,
-            "password": data.senha
-        }))
         try {
             const response = await fetch('https://fiap-dbe-globalsolution.herokuapp.com/api/auth', {
                 method: 'POST',
@@ -35,13 +30,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
                 })
             });
             const json = await response.text();
-            console.log('status ', response.status);
-
             if (response.status === 200) {
                 await AsyncStorage.setItem('token', json)
                 navigation.replace('Home')
             } else if (response.status === 403) {
-                console.log("mensagem de erro")
+                console.log("erro")
             }
         } catch (err) {
             console.log(err);

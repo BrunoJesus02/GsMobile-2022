@@ -30,13 +30,6 @@ import * as yup from 'yup';
 
     
     const cadastrar = async (data) => {
-        console.log(JSON.stringify({ 
-            "nome": data.nome,
-            "cpf": data.cpf,
-            "rg": data.rg,
-            "email": data.email,
-            "password": data.senha,
-        }))
         try {
             const response = await fetch('https://fiap-dbe-globalsolution.herokuapp.com/api/passageiro', {
                 method: 'POST',

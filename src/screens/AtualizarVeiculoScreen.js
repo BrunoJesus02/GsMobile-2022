@@ -1,20 +1,40 @@
-import React from 'react';
+import React, {useEffect, useState } from 'react';
 import { Text, View, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native';
 import {useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
     const AtualizarVeiculoScreen = ({navigation, route}) => {
 
+    const [ token, setToken ] = useState("");
+
+  
+    const onInit = async () => {
+        try {
+            const token = await AsyncStorage.getItem('token')
+            if(token != null) {
+                try {
+                    const tokenJson = await JSON.parse(token)
+                    setToken(tokenJson.token.token)
+                } catch (err) {
+                    console.log(err)
+                }
+            } 
+        } catch (e) {
+            console.log('erro na requisição' + e)
+        }
+    };
+
     const schema = yup.object({
         marca: yup.string()
-            .required("Informe seu email"),
-        modelo: yup.string().required("Informe a senha"),
-        ano: yup.number("Não é permitido letras")
+            .required("Informe a marca do veículo"),
+        modelo: yup.string().required("Informe o modelo"),
+        ano: yup.string("Não é permitido letras")
             .required("O ano do veículo é obrigatorio")
-            .integer("Não é permitido números negativos")
-            .max(9999, "Ano precisa ter apenas 4 digitos")
-            .min(9999, "Ano precisa ter 4 digitos"),
+            .max(99999, "Ano precisa ter apenas 4 digitos")
+            .min(2, "Ano precisa ter 4 digitos"),
         cor: yup.string("Inválido")
                 .required("A cor do veículo é obrigatória"),
         placa: yup.string().required("A placa do veículo é obrigatória"),
@@ -23,20 +43,52 @@ import * as yup from 'yup';
 
     const { control, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
-            marca: route.params.info.marca,
+            marca: "Teste",
             modelo: route.params.info.modelo,
-            ano: route.params.info.ano,
+            ano: route.params.info.ano.toString(),
             cor: route.params.info.cor,
             placa: route.params.info.placa,
-            chassi: route.params.info.chassi
+            chassi: "123123123"
         },
         resolver: yupResolver(schema)
     })
 
-    
-    const atualizar = (data) => {
-        console.log(data)
-        navigation.replace('Home')
+    useEffect(() => { onInit(); }, []);
+
+    const atualizar = async (data) => {
+        console.log(`https://fiap-dbe-globalsolution.herokuapp.com/api/veiculo/${route.params.info.id}`)
+        console.log({
+            "id": route.params.info.id,
+            "modelo": data.modelo,
+            "ano": data.ano,
+            "cor": data.cor,
+            "placa": data.placa,
+        })
+        try {
+            const response = await fetch(`https://fiap-dbe-globalsolution.herokuapp.com/api/veiculo/${route.params.info.id}`, {
+                method: 'PUT',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token,
+                },
+                body: JSON.stringify({
+                    "id": route.params.info.id,
+                    "modelo": data.modelo,
+                    "ano": data.ano,
+                    "cor": data.cor,
+                    "placa": data.placa,
+                })
+            });
+            if (response.status === 200) {
+                navigation.replace('Home')
+            } else {
+                console.log(response.status)
+                console.log("mensagem de erro")
+            }
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     return (
@@ -55,7 +107,9 @@ import * as yup from 'yup';
                 render={({ field: { onChange, value}}) => (
                     <TextInput style={styles.container__cadastro_mt__input}
                     placeholder = 'MARCA'
-                    placeholderTextColor={'#000'}/>
+                    placeholderTextColor={'#000'}
+                    onChangeText={onChange}
+                    value={value}/>
                 )}/>
                 {errors.marca && <Text style={styles.container__login__input_erros}>{errors.marca?.message}</Text>}
 
@@ -66,7 +120,9 @@ import * as yup from 'yup';
                 render={({ field: { onChange, value}}) => (
                     <TextInput style={styles.container__cadastro_mt__input}
                         placeholder = 'MODELO'
-                        placeholderTextColor={'#000'}/>
+                        placeholderTextColor={'#000'}
+                        onChangeText={onChange}
+                        value={value}/>
                 )}/>
                 {errors.modelo && <Text style={styles.container__login__input_erros}>{errors.modelo?.message}</Text>}
                 
@@ -77,7 +133,9 @@ import * as yup from 'yup';
                 render={({ field: { onChange, value}}) => (
                     <TextInput style={styles.container__cadastro_mt__input}
                         placeholder = 'ANO'
-                        placeholderTextColor={'#000'}/>
+                        placeholderTextColor={'#000'}
+                        onChangeText={onChange}
+                        value={value}/>
                 )}/>
                 {errors.ano && <Text style={styles.container__login__input_erros}>{errors.ano?.message}</Text>}   
 
@@ -87,7 +145,9 @@ import * as yup from 'yup';
                 render={({ field: { onChange, value}}) => (
                     <TextInput style={styles.container__cadastro_mt__input}
                         placeholder = 'COR'
-                        placeholderTextColor={'#000'}/>
+                        placeholderTextColor={'#000'}
+                        onChangeText={onChange}
+                        value={value}/>
                 )}/>
                 {errors.cor && <Text style={styles.container__login__input_erros}>{errors.cor?.message}</Text>}  
                     
@@ -98,7 +158,9 @@ import * as yup from 'yup';
                 render={({ field: { onChange, value}}) => (
                     <TextInput style={styles.container__cadastro_mt__input}
                         placeholder = 'PLACA'
-                        placeholderTextColor={'#000'}/> 
+                        placeholderTextColor={'#000'}
+                        onChangeText={onChange}
+                        value={value}/> 
                 )}/>
                 {errors.placa && <Text style={styles.container__login__input_erros}>{errors.placa?.message}</Text>}
                 
@@ -108,7 +170,9 @@ import * as yup from 'yup';
                 render={({ field: { onChange, value}}) => (
                     <TextInput style={styles.container__cadastro_mt__input}
                         placeholder = 'CHASSI DO VEÍCULO'
-                        placeholderTextColor={'#000'}/>
+                        placeholderTextColor={'#000'}
+                        onChangeText={onChange}
+                        value={value}/>
                 )}/>
                 {errors.chassi && <Text style={styles.container__login__input_erros}>{errors.chassi?.message}</Text>}
 

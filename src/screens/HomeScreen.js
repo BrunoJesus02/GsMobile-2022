@@ -13,9 +13,13 @@ const HomeScreen = ({navigation}) => {
             if(token != null) {
                 try {
                     const tokenJson = await JSON.parse(token)
-                    console.log('tokeJson ', tokenJson)
+                    console.log('tokeJson ', tokenJson.token.token)
                     setIsMotorista(tokenJson.isMotorista)
-                    setMotorista(tokenJson)  
+                    setToken(tokenJson.token.token)
+                    setIdMotorista(tokenJson.id)
+                    if (tokenJson.isMotorista === true) {
+                        carregarVeiculos(tokenJson.id)
+                    }  
                 } catch (err) {
                     console.log(err)
                 }
@@ -23,35 +27,47 @@ const HomeScreen = ({navigation}) => {
         } catch (e) {
           console.log('erro na requisição' + e)
         }
-        
-        if (isMotorista === true) {
-            carregarVeiculos(motorista.id)
-        }
       };
 
     const [ isMotorista, setIsMotorista ] = useState(false);
-    const [ motorista, setMotorista ] = useState({});
+    const [ token, setToken ] = useState("");
+    const [ veiculos, setVeiculos ] = useState({});
+    const [ idVeiculos, setIdVeiculos ] = useState(null);
+    const [ idMotorista, setIdMotorista ] = useState(null);
     const modalizeRef = useRef(null)
 
-    const onOpen= () =>  {
+    const onOpen = () => {
         modalizeRef.current?.open();
     }
 
-    const deletarVeiculo = () => {
-        console.log('deletar');
-        modalizeRef.current?.close();
+    const deletarVeiculo = async (id) => {
+        try {
+            const response = await fetch(`https://fiap-dbe-globalsolution.herokuapp.com/api/veiculo/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token,
+                }
+            }); 
+            if(response.status === 204) {
+                carregarVeiculos(idMotorista)
+                modalizeRef.current?.open();
+            }
+        } catch (err) {
+            console.log(err);
+        }
     }
 
 
     const carregarVeiculos = async (id) => {
-        console.log(`https://fiap-dbe-globalsolution.herokuapp.com/api/veiculo/motorista/${id}`);
         try {
             const response = await fetch(`https://fiap-dbe-globalsolution.herokuapp.com/api/veiculo/motorista/${id}`)
             if (response.status === 404) {
                 console.log('nao encontrado')
             } else if(response.status === 200) {
                 const json = await response.json();
-                console.log('veiculos ', json); 
+                setVeiculos(json)
             }
         } catch (err) {
             console.log(err);
@@ -82,35 +98,41 @@ const HomeScreen = ({navigation}) => {
                     </Pressable>
                 </View>
 
-                    <ScrollView style={styles.container__content__scroll_view}>
-
+            
+                <FlatList
+                data={veiculos}
+                vertical
+                showsHorizontalScrollIndicator={false}
+                keyExtractor={({id}) => id}
+                renderItem={({item}) => (
                     <View style={styles.container__content__scroll_view__card}>
-                        <Text style={styles.container__content__scroll_view__card_text}>Teste Da Honda</Text>
+                        <Text style={styles.container__content__scroll_view__card_text}>{item.modelo}</Text>
 
                         <Pressable
-                        style={styles.container__content__scroll_view__card_btn}>
+                        style={styles.container__content__scroll_view__card_btn}
+                        onPress={() => navigation.replace('AtualizarVeic', {info: item})}>
                             <IconeMt name="pencil" size={20}/>
                         </Pressable>
 
                         <Pressable
                         style={styles.container__content__scroll_view__card_btn}
-                        onPress={onOpen}>
+                        onPress={() => {deletarVeiculo(item.id)}}>
                             <IconeMt name="delete" size={20}/>
                         </Pressable>
-
                     </View>
-
-                    </ScrollView>
+                )}>
+                </FlatList>
+                  
 
                 <Modalize
                 ref={modalizeRef}
                 snapPoint={180}>
                     <View style={styles.container__content__modal_delete}>
-                        <Text style={styles.container__content__modal_delete_text}>TEM CERTEZA QUE DESEJA EXCLUIR ESSE VEÍCULO?</Text>
+                        <Text style={styles.container__content__modal_delete_text}>VEÍCULO DELETADO COM SUCESSO</Text>
                         <Pressable
                         style={styles.container__content__modal_delete__btn}
-                        onPress={deletarVeiculo}>
-                            <Text>CONFIRMAR</Text>
+                        onPress={() => {modalizeRef.current?.close();}}>
+                            <Text>FECHAR</Text>
                         </Pressable>
                     </View>    
                 </Modalize>

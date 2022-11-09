@@ -1,20 +1,42 @@
-import React from 'react';
+import React, { useEffect, useState }from 'react';
 import { Text, View, StyleSheet, Pressable, ScrollView, TextInput } from 'react-native';
 import {useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
     const CadastroVeiculoScreen = ({navigation}) => {
+
+    const [ motorista, setMotorista ] = useState();
+
+    const onInit = async () => {
+    
+        try {
+            const token = await AsyncStorage.getItem('token')
+            if(token != null) {
+                try {
+                    const tokenJson = await JSON.parse(token)
+                    setMotorista(tokenJson)
+                } catch (err) {
+                    console.log(err)
+                }
+            } 
+           
+        } catch (e) {
+            console.log('erro na requisição' + e)
+        }
+        console.log(motorista)
+        };
 
     const schema = yup.object({
         marca: yup.string()
             .required("Informe a marca do veículo"),
         modelo: yup.string().required("Informe o modelo"),
-        ano: yup.number("Não é permitido letras")
+        ano: yup.string("Não é permitido letras")
             .required("O ano do veículo é obrigatorio")
-            .integer("Não é permitido números negativos")
-            .max(9999, "Ano precisa ter apenas 4 digitos")
-            .min(9999, "Ano precisa ter 4 digitos"),
+            .max(99999, "Ano precisa ter apenas 4 digitos")
+            .min(2, "Ano precisa ter 4 digitos"),
         cor: yup.string("Inválido")
                 .required("A cor do veículo é obrigatória"),
         placa: yup.string().required("A placa do veículo é obrigatória"),
@@ -26,10 +48,44 @@ import * as yup from 'yup';
     })
 
     
-    const cadastrar = (data) => {
-        console.log(data)
-        navigation.replace('Home')
+    const cadastrar = async (data) => {
+        try {
+            const response = await fetch('https://fiap-dbe-globalsolution.herokuapp.com/api/veiculo', {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "modelo": data.modelo,
+                    "ano": data.ano,
+                    "cor": data.cor,
+                    "placa": data.placa,
+                    "motorista": {
+                            "id": motorista.id,
+                            "nome": motorista.name,
+                            "cpf": "16770851423",
+                            "cnh": "12345678911",
+                            "cadastroAtivo": true,
+                            "dataCadastro": "2022-07-22",
+                            "email": motorista.email
+                        }
+                })
+            });
+            const json = await response.text();
+            console.log('status ', response.status);
+
+            if (response.status === 201) {
+                navigation.replace('Home')
+            } else {
+                console.log("mensagem de erro")
+            }
+        } catch (err) {
+            console.log(err);
+        }
     };
+
+    useEffect(() => { onInit(); }, []);
 
     return (
         <View style={styles.container}>
