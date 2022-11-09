@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
     const AtualizarVeiculoScreen = ({navigation, route}) => {
 
     const [ token, setToken ] = useState("");
+    const [ motorista, setMotorista ] = useState();
 
   
     const onInit = async () => {
@@ -18,6 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
                 try {
                     const tokenJson = await JSON.parse(token)
                     setToken(tokenJson.token.token)
+                    setMotorista(tokenJson)
                 } catch (err) {
                     console.log(err)
                 }
@@ -28,8 +30,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
     };
 
     const schema = yup.object({
-        marca: yup.string()
-            .required("Informe a marca do veículo"),
         modelo: yup.string().required("Informe o modelo"),
         ano: yup.string("Não é permitido letras")
             .required("O ano do veículo é obrigatorio")
@@ -43,7 +43,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
     const { control, handleSubmit, formState: { errors } } = useForm({
         defaultValues: {
-            marca: "Teste",
             modelo: route.params.info.modelo,
             ano: route.params.info.ano.toString(),
             cor: route.params.info.cor,
@@ -56,14 +55,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
     useEffect(() => { onInit(); }, []);
 
     const atualizar = async (data) => {
-        console.log(`https://fiap-dbe-globalsolution.herokuapp.com/api/veiculo/${route.params.info.id}`)
-        console.log({
-            "id": route.params.info.id,
-            "modelo": data.modelo,
-            "ano": data.ano,
-            "cor": data.cor,
-            "placa": data.placa,
-        })
+        console.log(token)
         try {
             const response = await fetch(`https://fiap-dbe-globalsolution.herokuapp.com/api/veiculo/${route.params.info.id}`, {
                 method: 'PUT',
@@ -78,13 +70,21 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
                     "ano": data.ano,
                     "cor": data.cor,
                     "placa": data.placa,
+                    "motorista": {
+                        "id": motorista.id,
+                        "nome": motorista.name,
+                        "cpf": "16770851423",
+                        "cnh": "12345678911",
+                        "cadastroAtivo": true,
+                        "dataCadastro": "2022-07-22",
+                        "email": motorista.email
+                    }
                 })
             });
             if (response.status === 200) {
                 navigation.replace('Home')
             } else {
                 console.log(response.status)
-                console.log("mensagem de erro")
             }
         } catch (err) {
             console.log(err);
@@ -101,19 +101,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
             <View style={styles.container__content}>
                 <ScrollView style={styles.container__scroll_view}>
                 
-                <Controller
-                control={control}
-                name="marca"
-                render={({ field: { onChange, value}}) => (
-                    <TextInput style={styles.container__cadastro_mt__input}
-                    placeholder = 'MARCA'
-                    placeholderTextColor={'#000'}
-                    onChangeText={onChange}
-                    value={value}/>
-                )}/>
-                {errors.marca && <Text style={styles.container__login__input_erros}>{errors.marca?.message}</Text>}
-
-
                 <Controller
                 control={control}
                 name="modelo"

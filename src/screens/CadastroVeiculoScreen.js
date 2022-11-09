@@ -30,8 +30,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
         };
 
     const schema = yup.object({
-        marca: yup.string()
-            .required("Informe a marca do veículo"),
         modelo: yup.string().required("Informe o modelo"),
         ano: yup.string("Não é permitido letras")
             .required("O ano do veículo é obrigatorio")
@@ -97,19 +95,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
             <View style={styles.container__content}>
                 <ScrollView style={styles.container__scroll_view}>
                 
-                <Controller
-                control={control}
-                name="marca"
-                render={({ field: { onChange, value}}) => (
-                    <TextInput style={styles.container__cadastro_mt__input}
-                    placeholder = 'MARCA'
-                    placeholderTextColor={'#000'}
-                    onChangeText={onChange}
-                    value={value}/>
-                )}/>
-                {errors.marca && <Text style={styles.container__login__input_erros}>{errors.marca?.message}</Text>}
-
-
                 <Controller
                 control={control}
                 name="modelo"
