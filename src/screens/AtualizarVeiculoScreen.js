@@ -84,7 +84,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
             if (response.status === 200) {
                 navigation.replace('Home')
             } else {
-                console.log(response.status)
+                console.log('erro ', response.status)
             }
         } catch (err) {
             console.log(err);

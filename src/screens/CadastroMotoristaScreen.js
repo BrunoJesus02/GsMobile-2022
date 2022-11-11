@@ -32,7 +32,7 @@ import * as yup from 'yup';
             .required("O telefone é obrigatório")
             .integer("Numero de telefone inválido")
             .min(9999999, "Numero de telefone inválido")
-            .max(9999999999, "Numero de telefone inválido")
+            .max(999999999999, "Numero de telefone inválido")
             .positive("Numero de telefone inválido"),
         regiao: yup.string()
             .required("A região de trabalho é obrigatória")
@@ -62,13 +62,10 @@ import * as yup from 'yup';
                 })
             });
             const json = await response.text();
-            console.log('status ', response.status);
-
             if (response.status === 201) {
-                console.log("Cadastrou!")
                 navigation.replace('Login')
             } else {
-                console.log("mensagem de erro")
+                console.log("erro ", response.status)
             }
         } catch (err) {
             console.log(err);

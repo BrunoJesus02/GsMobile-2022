@@ -64,7 +64,7 @@ const HomeScreen = ({navigation}) => {
         try {
             const response = await fetch(`https://fiap-dbe-globalsolution.herokuapp.com/api/veiculo/motorista/${id}`)
             if (response.status === 404) {
-                console.log('nao encontrado')
+                console.log('Nenhum veículo encontrado')
             } else if(response.status === 200) {
                 const json = await response.json();
                 setVeiculos(json)
@@ -74,10 +74,21 @@ const HomeScreen = ({navigation}) => {
         }
     }
 
+    const logout = () => {
+        AsyncStorage.clear()
+        navigation.navigation('Login')
+    }
+
     useEffect(() => { onInit(); }, []);
     
     return (
     <View style={styles.container}>
+
+        <Pressable
+        style={styles.container__leave}
+        onPress={() => logout()}>
+            <IconeMt name="logout" size={25}/>
+        </Pressable>
 
         <View style={styles.container__circulo}></View>
 
@@ -100,6 +111,7 @@ const HomeScreen = ({navigation}) => {
 
             
                 <FlatList
+                style={styles.container__content__flat_list}
                 data={veiculos}
                 vertical
                 showsHorizontalScrollIndicator={false}
@@ -153,7 +165,7 @@ const HomeScreen = ({navigation}) => {
                     </View>
 
                     <View style={styles.container__content__ps__content__card}>
-                        <Text style={styles.container__content__ps__content__card_value}>Bruno Jesus</Text>
+                        <Text style={styles.container__content__ps__content__card_value}>Pedro Araujo</Text>
                         <Text style={styles.container__content__ps__content__card_value}>321</Text>
                         <Pressable
                         style={styles.container__content__ps__content__card_btn}>
@@ -179,6 +191,11 @@ const styles = StyleSheet.create({
         display: 'flex',
         alignItems: 'center',
         paddingTop: 60
+    },
+    container__leave: {
+        position: 'absolute',
+        right: 40,
+        top: 70,
     },
     container__circulo: {
         backgroundColor: '#D6D58E',
@@ -221,6 +238,13 @@ const styles = StyleSheet.create({
     container__content__mt__btn_text: {
         fontSize: 14,
         fontWeight: '300'
+    },
+    container__content__flat_list: {
+        borderWidth: 1,
+        marginTop: 20,
+        borderRadius: 10,
+        borderColor: '#D6D58E',
+        width: '80%'
     },
     container__content__scroll_view: {
         marginTop: 20,

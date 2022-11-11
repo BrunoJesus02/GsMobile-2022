@@ -70,13 +70,10 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
                         }
                 })
             });
-            const json = await response.text();
-            console.log('status ', response.status);
-
             if (response.status === 201) {
                 navigation.replace('Home')
             } else {
-                console.log("mensagem de erro")
+                console.log("erro ", response.status)
             }
         } catch (err) {
             console.log(err);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Text, View, StyleSheet, Pressable, Image, TextInput } from 'react-native';
 import {useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -6,6 +6,8 @@ import * as yup from 'yup';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
     const LoginScreen = ({navigation}) => {
+
+        const [ erroLoginNaoPermitido, setErroLoginNaoPermitido ] = useState(false);
 
     const schema = yup.object({
         email: yup.string().email("Email inválido").required("Informe seu email"),
@@ -33,8 +35,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
             if (response.status === 200) {
                 await AsyncStorage.setItem('token', json)
                 navigation.replace('Home')
-            } else if (response.status === 403) {
-                console.log("erro")
+            } else if (response.status === 403 ) { 
+                setErroLoginNaoPermitido(true)
+                console.log(response.status)
+            } else {
+                console.log(response.status)
             }
         } catch (err) {
             console.log(err);
@@ -73,6 +78,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
                 secureTextEntry={true}/>
           )}/>
         {errors.senha && <Text style={styles.container__login__input_erros}>{errors.senha?.message}</Text>}
+
+        {
+            erroLoginNaoPermitido ? 
+            <Text style={styles.container__login__input_erros}>Login/Senha inválida</Text>
+            :
+            <Text></Text>
+        }
 
         <Pressable 
           style={styles.container__login__btn}
